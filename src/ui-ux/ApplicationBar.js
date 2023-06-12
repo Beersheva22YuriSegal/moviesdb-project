@@ -1,4 +1,3 @@
-const ACTIVE = 'active'
 export default class ApplicationBar {
     #buttons
     #activeIndex
@@ -27,16 +26,11 @@ export default class ApplicationBar {
     async #handler(index) {
         if (this.#activeIndex == undefined || index != this.#activeIndex) {
             if (this.#activeIndex != undefined) {
-                this.#buttons[this.#activeIndex].classList.remove(ACTIVE);
                 this.#sectionElements[this.#activeIndex].style.display = 'none';
             }
-            this.#buttons[index].classList.add(ACTIVE);
             await this.#callbackFn(index);
             this.#sectionElements[index].style.display = 'flex';
             this.#activeIndex = index;
         }
     }
-    // getActiveIndex() {
-    //     return this.#activeIndex;
-    // }
 }

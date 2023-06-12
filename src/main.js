@@ -3,9 +3,10 @@ import MoviesService from "./service/MoviesService.js";
 import ApplicationBar from "./ui-ux/ApplicationBar.js";
 import MoviesGrid from "./ui-ux/MoviesGrid.js";
 import MovieDetails from "./ui-ux/MovieDetails.js";
+// import SearchForm from "./ui-ux/SearchForm.js";
+// import AuthorizationForm from "./ui-ux/AuthorizationForm.js";
 
 //constants
-const detailElement = "details-movie-container"
 const POP_SORT = 'popular'
 const TOP_SORT = 'top_rated'
 const UPCOMING_SORT = 'upcoming'
@@ -13,24 +14,26 @@ const NOW_SORT = 'now_playing'
 
 
 const menuOptions = [
-    { title: "Home", id: "movies-container-place" },
+    { title: "Popular", id: "movies-container-place" },
     { title: "Top Rated", id: "movies-container-place" },
     { title: "Upcoming", id: "movies-container-place" },
-    { title: "Now playing", id: "movies-container-place" },
-    { title: "Search movie", id: "movies-container-place" }
+    { title: "Now Playing", id: "movies-container-place" },
+    { title: "Search Movie", id: "movies-search-place" }
     // { title: "Watching List", id: "movies-container-place" },
-    // { title: "Favorite place", id: "movies-container-place" }
+    // { title: "Favorite place", id: "movies-container-place" },
 ];
 
+
 //objects
-const menu = new ApplicationBar("menu-place", menuOptions, menuHandler);
-const movieService = new MoviesService(movieConfig.baseUrl, movieConfig.apiKey, movieConfig.imageUrl);
+const menu = new ApplicationBar("main-menu-place", menuOptions, menuHandler);
+const movieService = new MoviesService(movieConfig.baseUrl, movieConfig.apiKey, movieConfig.imageUrl, movieConfig.searchUrl, movieConfig.genresUrl);
 const popularMovies = await movieService.getSortedMovies(POP_SORT);
 const topMovies = await movieService.getSortedMovies(TOP_SORT);
 const upcomingMovies = await movieService.getSortedMovies(UPCOMING_SORT);
 const nowPlayingMovies = await movieService.getSortedMovies(NOW_SORT);
 const moviesList = new MoviesGrid('movies-thumbnails-place', thumbnailHandler);
-const detailSection = new MovieDetails(detailElement, movieConfig.imageUrl, hideDetails);
+const detailSection = new MovieDetails("details-movie-container", movieConfig.imageUrl, hideDetails);
+let obj;
 
 //functions
 async function menuHandler(index) {
@@ -51,11 +54,15 @@ async function menuHandler(index) {
             moviesList.fillList('movies-thumbnails-place', nowPlayingMovies);
             break;
         }
+        case 4: {
+            //TODO
+        }
     }
 }
 
-async function thumbnailHandler(index){
-    const detailsData = await movieService.getMovie(index);  
+
+async function thumbnailHandler(id){
+    const detailsData = await movieService.getMovie(id);  
     detailSection.fillDetails(detailsData)    
 }
 function hideDetails() {   
@@ -64,3 +71,8 @@ function hideDetails() {
     detailSection.style.display = 'none';
     movContainerSect.style.display = 'flex';    
 }
+
+// async function getGenres(){
+//     const genres = await movieService.getGenres();
+//     searchForm.fillData(genres.genres)
+// }

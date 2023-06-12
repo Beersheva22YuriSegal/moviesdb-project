@@ -1,5 +1,7 @@
 {
     "baseUrl": "https://api.themoviedb.org/3/movie/",
-    "apiKey": "2c46288716a18fb7aadcc2a801f3fc6b",
-    "imageUrl": "https://image.tmdb.org/t/p/w500"
+    "imageUrl": "https://image.tmdb.org/t/p/w500",
+    "genresUrl": "https://api.themoviedb.org/3/genre/movie/list?language=en-US",
+    "searchUrl": "https://api.themoviedb.org/3/search/movie?",
+    "apiKey": "2c46288716a18fb7aadcc2a801f3fc6b"
 }

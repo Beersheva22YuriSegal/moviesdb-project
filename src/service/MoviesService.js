@@ -1,12 +1,16 @@
 export default class MoviesService {
   #baseUrl;
-  #apiKey;
   #imageUrl;
+  #genresUrl;
+  #searchUrl;
+  #apiKey;
 
-  constructor(baseUrl, apiKey, imageUrl) {
+  constructor(baseUrl, apiKey, imageUrl, searchUrl, genresUrl) {
     this.#baseUrl = baseUrl;
-    this.#apiKey = apiKey;
     this.#imageUrl = imageUrl;
+    this.#genresUrl = genresUrl
+    this.#searchUrl = searchUrl;
+    this.#apiKey = apiKey;
   }
 
   #getUrl(sortType) {
@@ -20,22 +24,28 @@ export default class MoviesService {
       return {
         "id": movie.id,
         "original_title": movie.original_title,
-        "vote_average": movie.vote_average,
-        "genre_ids": movie.genre_ids,
         "backdrop_path": this.#imageUrl + movie.backdrop_path,
+        "genre_ids": movie.genre_ids,
       };
     });
   }
 
   async getMovie(id) {
     const response = await fetch(`${this.#baseUrl}${id}?language=en-US&api_key=${this.#apiKey}`)
-    return await response.json();
+    return response.json();
   }
 
+  // https://api.themoviedb.org/3/genre/movie/list?language=en-US&api_key=2c46288716a18fb7aadcc2a801f3fc6b
   async getGenres() {
-    const response = await fetch(`${this.#baseUrl}genre/movie/list?language=en&api_key=${this.#apiKey}`);
-    return await response.json();
+    const response = await fetch(`${this.#genresUrl}&api_key=${this.#apiKey}`)
+    const res = await response.json();
+    console.log(res);
+    return res;
   }
+
+  async searchMovies(){
+    //TODO
+}
 
   getImagePath() {
     return this.#imageUrl;
