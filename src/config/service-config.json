@@ -1,7 +1,11 @@
 {
     "baseUrl": "https://api.themoviedb.org/3/movie/",
-    "imageUrl": "https://image.tmdb.org/t/p/w500",
-    "genresUrl": "https://api.themoviedb.org/3/genre/movie/list?language=en-US",
-    "searchUrl": "https://api.themoviedb.org/3/search/movie?",
-    "apiKey": "2c46288716a18fb7aadcc2a801f3fc6b"
+    "popularMovies": "popular?language=en-US&page=",
+    "topRatedMovies": "top_rated?language=en-US&page=",
+    "upcomingMovies": "upcoming?language=en-US&page=",
+    "nowPlayingMovies": "now_playing?language=en-US&page=",
+    "genresUrl": "https://api.themoviedb.org/3/genre/movie/list?language=en",
+    "searchUrl": "https://api.themoviedb.org/3/discover/movie?",
+    "jsonUrl": "http://localhost:3500/users",
+    "apiKey": "&api_key=2c46288716a18fb7aadcc2a801f3fc6b"
 }

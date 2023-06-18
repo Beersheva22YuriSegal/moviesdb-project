@@ -1,42 +1,45 @@
 export default class MoviesGrid {
-    #thumbnails
-    #callbackFn
-    #activeIndex
-    #sectionElement
+    #moviesContainer;
+    #callbackFn;
+    #movieElements;
+    #parentId;
+    #movieElementId;
 
-    constructor(parentId, callbackFn) {
+    constructor(parentId, movieElementId, callbackFn) {
+        this.#movieElementId = movieElementId;
+        this.#parentId = parentId;
+        this.#buildMoviePlace(movieElementId);
+        this.#movieElements = [];
         this.#callbackFn = callbackFn;
-        this.#sectionElement = document.getElementById("details-movie-section");
     }
 
-    fillList(parentId, thumbData) {
-        const parentElement = document.getElementById(parentId);
-        parentElement.innerHTML = thumbData.map(t =>
-            `<li class="thumbnails-item" id="${t.id}">
-                <div class="thumbnails-anchor">
-                <img src="${t.backdrop_path}" class="thumbnails-image">
-                <div class="thumbnails-title">${t.original_title}</div></div></li>`).join('');
-                this.#thumbnails = parentElement.childNodes;
-                this.#addListeners();
+    #buildMoviePlace(parentId) {
+        this.#moviesContainer = document.getElementById(parentId);
     }
-    #addListeners() {
-        this.#thumbnails.forEach((b) => 
-        b.addEventListener('click', this.#handler.bind(this, b.id)))
+
+    fillData(movies) {
+        this.#moviesContainer.innerHTML = movies.map((m) => this.#addMovie(m)).join('');
+        const parentElement = document.getElementById(this.#movieElementId)
+        this.#movieElements = parentElement.childNodes;
+        this.#addListener();
+    }
+
+
+    #addListener() {
+        this.#movieElements.forEach((element) => {
+            element.addEventListener('click', this.#handler.bind(this, element.id))
+        });
     }
 
     async #handler(index) {
-        if (this.#activeIndex == undefined || index != this.#activeIndex) {
-            if (this.#activeIndex != undefined) {
-                this.#sectionElement.style.display = 'none';
-            }
-            await this.#callbackFn(index);
-            this.#sectionElement.style.display = 'flex';
-            document.getElementById("movies-container-place").style.display = 'none';
-            this.#activeIndex = index;
-        }
+        document.getElementById(this.#parentId).style.display = 'none';
+        this.#callbackFn(index);
     }
 
-    getActiveIndex() {
-        return this.#activeIndex;
+    #addMovie(movie) {
+        return `<div id='${movie.id}' class='movie-element'>
+                    <img src = ${movie.poster_path == null ? './src/images/imageNA.png': 'https://image.tmdb.org/t/p/w500' + movie.poster_path} class = 'movie-element-img'>
+                    <div class ='movie-element-title'>${movie.title}</div>
+                </div>`
     }
 }

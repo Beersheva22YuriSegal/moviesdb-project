@@ -1,53 +1,74 @@
 export default class MoviesService {
   #baseUrl;
-  #imageUrl;
   #genresUrl;
   #searchUrl;
+  #jsonUrl;
   #apiKey;
 
-  constructor(baseUrl, apiKey, imageUrl, searchUrl, genresUrl) {
+  constructor(baseUrl, genresUrl, searchUrl, jsonUrl, apiKey) {
     this.#baseUrl = baseUrl;
-    this.#imageUrl = imageUrl;
-    this.#genresUrl = genresUrl
+    this.#genresUrl = genresUrl;
     this.#searchUrl = searchUrl;
+    this.#jsonUrl = jsonUrl;
     this.#apiKey = apiKey;
   }
 
-  #getUrl(sortType) {
-    return `${this.#baseUrl}${sortType}?language=en-US&page=1&api_key=${this.#apiKey}`
-  }
-
-  async getSortedMovies(sortType) {
-    const response = await fetch(this.#getUrl(sortType));
-    const data = await response.json();
-    return data.results.map(movie => {
-      return {
-        "id": movie.id,
-        "original_title": movie.original_title,
-        "backdrop_path": this.#imageUrl + movie.backdrop_path,
-        "genre_ids": movie.genre_ids,
-      };
-    });
-  }
-
-  async getMovie(id) {
-    const response = await fetch(`${this.#baseUrl}${id}?language=en-US&api_key=${this.#apiKey}`)
+  async getMovies(sortType, page) {
+    const response = await fetch(this.#baseUrl + sortType + page + this.#apiKey);
     return response.json();
   }
 
-  // https://api.themoviedb.org/3/genre/movie/list?language=en-US&api_key=2c46288716a18fb7aadcc2a801f3fc6b
+  async getMovie(id) {
+    const response = await fetch(this.#baseUrl + id + "?language=en-US" + this.#apiKey);
+    return response.json()
+  }
+
   async getGenres() {
-    const response = await fetch(`${this.#genresUrl}&api_key=${this.#apiKey}`)
-    const res = await response.json();
-    console.log(res);
-    return res;
+    const response = await fetch(`${this.#genresUrl}${this.#apiKey}`)
+    return response.json();
   }
 
-  async searchMovies(){
-    //TODO
-}
-
-  getImagePath() {
-    return this.#imageUrl;
+  async searchMovies(obj, page) {
+    const fields = `page=${page}${obj.year != '' ? `&primary_release_year=${obj.year}` : ''}${obj.genre != '' ? `&with_genres=${obj.genre}` : ''}&sort_by=popularity.desc${this.#apiKey}`;
+    const response = await fetch(`${this.#searchUrl}${fields}`);
+    return response.json();
   }
+
+  async createUser(mail, pass) {
+    const user = { mail, pass, 'watchList': [], 'favList': [] };
+    const response = await fetch(this.#jsonUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(user)
+    });
+    return await response.json();
+  }
+
+  async getMoviesFromUserList(listName, id) {
+    const user = await this.getUserById(id);
+    return user[listName]
+  }
+
+  async getUser(email, password) {
+    const response = await fetch(`${this.#jsonUrl}?email=${email}&password=${password}`)
+    return response.json()
+  }
+
+  async getUserById(id) {
+    const response = await fetch(`${this.#jsonUrl}/${id}`)
+    return response.json()
+  }
+
+  async updateUserMovies(id, movieId, listName) {
+    const user = await this.getUserById(id);
+    let moviesList = user[listName];
+    moviesList.includes(movieId) ? moviesList.splice(moviesList.indexOf(movieId), 1) : moviesList.push(movieId);
+    const response = await fetch(`${this.#jsonUrl}/${user.id}`, {
+      method: 'PUT',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user)
+    });
+    return await response.json();
+  }
+
 }
